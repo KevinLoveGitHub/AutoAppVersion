@@ -29,7 +29,7 @@ gradlePlugin {
 // configured to publish your plugin to the plugin portal
 pluginBundle {
     website = 'http://www.kangxiaoguang.com/'
-    vcsUrl = 'https://github.com/gradle/gradle'
+    vcsUrl = 'https://github.com/KevinLoveGitHub/AutoAppVersion.git'
     description = 'Auto App Version Plugin'
     tags = ['version', 'auto']
 
