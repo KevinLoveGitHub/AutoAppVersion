@@ -13,7 +13,12 @@ class AutoAppVersionPluginTest {
     public void greeterPluginAddsGreetingTaskToProject() {
         Project project = ProjectBuilder.builder().build()
         project.pluginManager.apply 'com.kangxiaoguang.auto-app-version'
+        def type = project.extensions.getByType(AutoAppVersionExtension.class)
+        type.appMajor = "2"
+        type.appMinor = "1"
+        type.isDebug = false
         def task = project.tasks.hello
         task.getActions().forEach({ action -> action.execute(task) })
+        println(project.ext.versionName)
     }
 }

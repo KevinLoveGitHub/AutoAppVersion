@@ -1,6 +1,8 @@
 plugins {
     id 'groovy'
     id 'java'
+    id "com.gradle.plugin-publish" version "0.10.1"
+    id "java-gradle-plugin"
 }
 
 group 'com.kangxiaoguang'
@@ -10,6 +12,33 @@ sourceCompatibility = 1.8
 
 repositories {
     mavenCentral()
+    jcenter()
+}
+
+// Use java-gradle-plugin to generate plugin descriptors and specify plugin ids
+gradlePlugin {
+    plugins {
+        autoAppVersionPlugin {
+            id = 'com.kangxiaoguang.auto-app-version'
+            implementationClass = 'com.kangxiaoguang.AutoAppVersionPlugin'
+        }
+    }
+}
+
+// The configuration example below shows the minimum required properties
+// configured to publish your plugin to the plugin portal
+pluginBundle {
+    website = 'http://www.kangxiaoguang.com/'
+    vcsUrl = 'https://github.com/gradle/gradle'
+    description = 'Auto App Version Plugin'
+    tags = ['version', 'auto']
+
+    plugins {
+        autoAppVersionPlugin {
+            // id is captured from java-gradle-plugin configuration
+            displayName = 'Gradle Auto App Version Plugin'
+        }
+    }
 }
 
 dependencies {
