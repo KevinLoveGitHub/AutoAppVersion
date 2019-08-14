@@ -17,8 +17,7 @@ class AutoAppVersionPluginTest {
         type.appMajor = "2"
         type.appMinor = "1"
         type.isDebug = false
-        def task = project.tasks.hello
-        task.getActions().forEach({ action -> action.execute(task) })
-        println(project.ext.versionName)
+//        task.getActions().forEach({ action -> action.execute(task) })
+//        println(project.ext.versionName)
     }
 }

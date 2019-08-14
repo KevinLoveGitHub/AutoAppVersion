@@ -1,7 +1,11 @@
 package com.kangxiaoguang
 
+import com.android.build.gradle.api.BaseVariant
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.plugins.InvalidPluginException
+
+import java.util.logging.Logger
 
 /**
  * 说明：
@@ -9,15 +13,35 @@ import org.gradle.api.Project
  * 日期：2019-08-13
  */
 class AutoAppVersionPlugin implements Plugin<Project> {
+    private AutoAppVersionExtension extension
+    private Logger logger
+    private Project project
+
     @Override
     void apply(Project project) {
-        def extension = project.extensions.create('version', AutoAppVersionExtension)
-        project.task('hello') {
-            doLast {
-                def versionName = getVersionName(extension)
-                project.ext.versionName = versionName
-                println("版本号：${ versionName}")
+        this.project = project
+        logger = Logger.getLogger("")
+        if (!project.plugins.hasPlugin("com.android.application")) {
+            throw new InvalidPluginException("'com.android.application' plugin must be applied", null)
+        }
+        extension = project.extensions.create('appVersion', AutoAppVersionExtension)
+        project.afterEvaluate {
+            project.android.applicationVariants.all { BaseVariant variant ->
+                addTasks(variant)
             }
+        }
+    }
+
+    void addTasks(BaseVariant variant) {
+        def versionName = getVersionName(this.extension)
+        def revisionNumber = getRevisionNumber()
+        variant.outputs.each { output ->
+            output.versionNameOverride = versionName
+            output.versionCodeOverride = revisionNumber
+        }
+
+        variant.outputs.all { output ->
+            outputFileName = "${variant.getApplicationId()}_${versionName}.apk"
         }
     }
 
