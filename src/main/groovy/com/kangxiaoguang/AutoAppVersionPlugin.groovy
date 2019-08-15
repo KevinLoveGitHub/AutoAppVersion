@@ -46,6 +46,8 @@ class AutoAppVersionPlugin implements Plugin<Project> {
     }
 
     private static String getVersionName(AutoAppVersionExtension extension) {
+        extension.appMajor = extension.appMajor == null ? '1' : extension.appMajor
+        extension.appMinor = extension.appMinor == null ? '1' : extension.appMinor
         String version = 'v' + extension.appMajor +
                 '.' + extension.appMinor +
                 '.' + getRevisionNumber()
