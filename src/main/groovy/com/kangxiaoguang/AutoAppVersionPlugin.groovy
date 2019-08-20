@@ -35,6 +35,7 @@ class AutoAppVersionPlugin implements Plugin<Project> {
     void addTasks(BaseVariant variant) {
         def versionName = getVersionName(this.extension)
         def revisionNumber = getRevisionNumber()
+        println('versionName: ' + versionName + ' revisionNumber: ' + revisionNumber)
         variant.outputs.each { output ->
             output.versionNameOverride = versionName
             output.versionCodeOverride = revisionNumber
@@ -56,7 +57,7 @@ class AutoAppVersionPlugin implements Plugin<Project> {
         if (extension.isDebug) {
             return version + ".$today." + getRevisionDescription() + '.debug'
         }
-        return version + ".$today." + getRevisionDescription()
+        return version + ".$today." + getRevisionDescription() + '_' + getBranchName()
     }
 
     private static String getRevisionDescription() {
@@ -68,5 +69,9 @@ class AutoAppVersionPlugin implements Plugin<Project> {
         Process process = "git rev-list --count HEAD".execute()
         process.waitFor()
         return process.getText().toInteger()
+    }
+
+    private static String getBranchName() {
+        return "git symbolic-ref --short -q HEAD".execute().getText()
     }
 }
