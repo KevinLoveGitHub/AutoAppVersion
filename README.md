@@ -1,6 +1,6 @@
-#AutoAppVersion
+# AutoAppVersion
 
-##example
+## example
 在项目中配置主版本和子版本，如果没有配置默认都为`1`
 
 项目根目录 `build.gradle` 配置：

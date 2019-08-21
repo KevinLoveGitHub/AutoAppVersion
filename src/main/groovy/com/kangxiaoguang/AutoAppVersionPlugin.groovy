@@ -55,7 +55,7 @@ class AutoAppVersionPlugin implements Plugin<Project> {
         String today = new Date().format('yyMMdd')
         String time = new Date().format('HHmmss')
         if (extension.isDebug) {
-            return version + ".$today." + getRevisionDescription() + '.debug'
+            return version + ".$today." + getRevisionDescription() + '_' + getBranchName() + '.debug'
         }
         return version + ".$today." + getRevisionDescription() + '_' + getBranchName()
     }
@@ -72,6 +72,6 @@ class AutoAppVersionPlugin implements Plugin<Project> {
     }
 
     private static String getBranchName() {
-        return "git symbolic-ref --short -q HEAD".execute().getText()
+        return "git symbolic-ref --short -q HEAD".execute().getText().trim()
     }
 }
