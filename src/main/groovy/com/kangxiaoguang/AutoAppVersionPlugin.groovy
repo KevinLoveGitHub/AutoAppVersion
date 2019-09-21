@@ -38,7 +38,7 @@ class AutoAppVersionPlugin implements Plugin<Project> {
         println('versionName: ' + versionName + ' revisionNumber: ' + revisionNumber)
         variant.outputs.each { output ->
             output.versionNameOverride = versionName
-            output.versionCodeOverride = revisionNumber
+            output.versionCodeOverride = revisionNumber + output.versionCode
         }
 
         variant.outputs.all { output ->
