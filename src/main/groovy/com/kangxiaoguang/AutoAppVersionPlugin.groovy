@@ -16,6 +16,9 @@ class AutoAppVersionPlugin implements Plugin<Project> {
     private AutoAppVersionExtension extension
     private Logger logger
     private Project project
+    private String versionName
+    private String revisionNumber
+    private int versionCode
 
     @Override
     void apply(Project project) {
@@ -33,12 +36,13 @@ class AutoAppVersionPlugin implements Plugin<Project> {
     }
 
     void addTasks(BaseVariant variant) {
-        def versionName = getVersionName(this.extension)
-        def revisionNumber = getRevisionNumber()
-        println('versionName: ' + versionName + ' revisionNumber: ' + revisionNumber)
+        revisionNumber = getRevisionNumber()
         variant.outputs.each { output ->
+            versionName = getVersionName(this.extension, output.versionCode) + "_${output.name}"
+            versionCode = revisionNumber + output.versionCode
+            println("versionName: ${versionName} versionCode: ${versionCode} revisionNumber: ${revisionNumber}")
             output.versionNameOverride = versionName
-            output.versionCodeOverride = revisionNumber + output.versionCode
+            output.versionCodeOverride = versionCode
         }
 
         variant.outputs.all { output ->
@@ -46,12 +50,12 @@ class AutoAppVersionPlugin implements Plugin<Project> {
         }
     }
 
-    private static String getVersionName(AutoAppVersionExtension extension) {
+    private static String getVersionName(AutoAppVersionExtension extension, int versionCode) {
         extension.appMajor = extension.appMajor == null ? '1' : extension.appMajor
         extension.appMinor = extension.appMinor == null ? '1' : extension.appMinor
         String version = 'v' + extension.appMajor +
                 '.' + extension.appMinor +
-                '.' + getRevisionNumber()
+                '.' + (getRevisionNumber() + versionCode)
         String today = new Date().format('yyMMdd')
         String time = new Date().format('HHmmss')
         if (extension.isDebug) {
