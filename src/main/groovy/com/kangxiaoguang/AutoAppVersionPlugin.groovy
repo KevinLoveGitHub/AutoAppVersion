@@ -1,9 +1,11 @@
 package com.kangxiaoguang
 
 import com.android.build.gradle.api.BaseVariant
+import org.gradle.api.Action
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import org.gradle.api.plugins.InvalidPluginException
+import org.gradle.process.ExecSpec
 
 import java.util.logging.Logger
 
@@ -50,7 +52,7 @@ class AutoAppVersionPlugin implements Plugin<Project> {
         }
     }
 
-    private static String getVersionName(AutoAppVersionExtension extension, int versionCode) {
+    private String getVersionName(AutoAppVersionExtension extension, int versionCode) {
         extension.appMajor = extension.appMajor == null ? '1' : extension.appMajor
         extension.appMinor = extension.appMinor == null ? '1' : extension.appMinor
         String version = 'v' + extension.appMajor +
@@ -64,18 +66,49 @@ class AutoAppVersionPlugin implements Plugin<Project> {
         return version + ".$today." + getRevisionDescription() + '_' + getBranchName()
     }
 
-    private static String getRevisionDescription() {
+    private String getRevisionDescription() {
         String desc = 'git describe --always'.execute().getText().trim()
-        return (desc == null || desc.size() == 0) ? new Date().format("yyMMdd") : desc.substring(desc.size() - 6)
+        def result = getExecResult("git", "describe", "--always")
+        return (result == null || result.size() == 0) ? new Date().format("yyMMdd") : result.substring(result.size() - 6)
     }
 
-    private static int getRevisionNumber() {
-        Process process = "git rev-list --count HEAD".execute()
-        process.waitFor()
-        return process.getText().toInteger()
+    private int getRevisionNumber() {
+        def result = getExecResult("git", "rev-list", "--count", "HEAD")
+        if (result == null) {
+            return 0
+        }
+        return result.toInteger()
     }
 
-    private static String getBranchName() {
-        return "git symbolic-ref --short -q HEAD".execute().getText().trim()
+    private String getBranchName() {
+        def result = getExecResult("git", "symbolic-ref", "--short", "-q", "HEAD")
+        if (result == null) {
+            return 0
+        }
+        return result
+    }
+
+    private String getExecResult(String... args) {
+        def count = new ByteArrayOutputStream()
+        def error = new ByteArrayOutputStream()
+        def action = new Action<ExecSpec>() {
+            @Override
+            void execute(ExecSpec execSpec) {
+                execSpec.workingDir("./")
+                execSpec.commandLine(args)
+                execSpec.setStandardOutput(count)
+                execSpec.setErrorOutput(error)
+            }
+        }
+        try {
+            def exec = this.project.exec(action)
+            if (exec.exitValue != 0) {
+                return null
+            }
+            return count.toString('UTF-8').trim()
+        } catch (Exception e) {
+            this.project.logger.error(e.getMessage())
+        }
+        return null
     }
 }

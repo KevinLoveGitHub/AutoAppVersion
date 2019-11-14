@@ -3,13 +3,13 @@ plugins {
     id 'java'
     id 'maven'
     id 'maven-publish'
-    id "com.gradle.plugin-publish" version "0.10.1"
     id "java-gradle-plugin"
+    //id "com.gradle.plugin-publish" version "0.10.1"
     id "com.jfrog.bintray" version "1.8.4"
 }
 
 group 'com.kangxiaoguang.gradle.tools'
-version '1.5'
+version '1.6'
 
 sourceCompatibility = 1.8
 
@@ -39,47 +39,47 @@ gradlePlugin {
 
 // The configuration example below shows the minimum required properties
 // configured to publish your plugin to the plugin portal
-pluginBundle {
-    website = 'http://www.kangxiaoguang.com/'
-    vcsUrl = 'https://github.com/KevinLoveGitHub/AutoAppVersion.git'
-    description = 'Auto App Version Plugin'
-    tags = ['version', 'auto']
+//pluginBundle {
+//    website = 'http://www.kangxiaoguang.com/'
+//    vcsUrl = 'https://github.com/KevinLoveGitHub/AutoAppVersion.git'
+//    description = 'Auto App Version Plugin'
+//    tags = ['version', 'auto']
+//
+//    plugins {
+//        autoAppVersionPlugin {
+//            // id is captured from java-gradle-plugin configuration
+//            displayName = 'Gradle Auto App Version Plugin'
+//        }
+//    }
+//}
 
-    plugins {
-        autoAppVersionPlugin {
-            // id is captured from java-gradle-plugin configuration
-            displayName = 'Gradle Auto App Version Plugin'
-        }
-    }
-}
-
-install {
-    repositories.mavenInstaller {
-        pom.project {
-            url 'http://lovedev.org'
-
-            packaging 'aar'
-            //artifactId 'auto-app-version' //如果不设置默认使用settings.gradle中的配置 rootProject.name = 'auto-app-version'
-
-            licenses {
-                license {
-                    name 'The Apache Software License, Version 2.0'
-                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-                    distribution 'repo'
-                }
-            }
-            scm {
-                connection 'https://github.com/KevinLoveGitHub/AutoAppVersion.git'
-                url 'https://github.com/KevinLoveGitHub/AutoAppVersion'
-            }
-            developers {
-                developer {
-                    name 'Kevin.Kang'
-                }
-            }
-        }
-    }
-}
+//install {
+//    repositories.mavenInstaller {
+//        pom.project {
+//            url 'http://lovedev.org'
+//
+//            packaging 'aar'
+//            //artifactId 'auto-app-version' //如果不设置默认使用settings.gradle中的配置 rootProject.name = 'auto-app-version'
+//
+//            licenses {
+//                license {
+//                    name 'The Apache Software License, Version 2.0'
+//                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+//                    distribution 'repo'
+//                }
+//            }
+//            scm {
+//                connection 'https://github.com/KevinLoveGitHub/AutoAppVersion.git'
+//                url 'https://github.com/KevinLoveGitHub/AutoAppVersion'
+//            }
+//            developers {
+//                developer {
+//                    name 'Kevin.Kang'
+//                }
+//            }
+//        }
+//    }
+//}
 
 bintray {
     user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
