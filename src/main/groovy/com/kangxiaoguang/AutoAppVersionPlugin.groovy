@@ -67,9 +67,8 @@ class AutoAppVersionPlugin implements Plugin<Project> {
     }
 
     private String getRevisionDescription() {
-        String desc = 'git describe --always'.execute().getText().trim()
-        def result = getExecResult("git", "describe", "--always")
-        return (result == null || result.size() == 0) ? new Date().format("yyMMdd") : result.substring(result.size() - 6)
+        def result = getExecResult("git", "rev-parse", "--short", "HEAD")
+        return (result == null || result.size() == 0) ? new Date().format("yyMMdd") : result
     }
 
     private int getRevisionNumber() {
