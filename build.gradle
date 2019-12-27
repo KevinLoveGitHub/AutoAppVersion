@@ -53,33 +53,42 @@ gradlePlugin {
 //    }
 //}
 
-//install {
-//    repositories.mavenInstaller {
-//        pom.project {
-//            url 'http://lovedev.org'
-//
-//            packaging 'aar'
-//            //artifactId 'auto-app-version' //如果不设置默认使用settings.gradle中的配置 rootProject.name = 'auto-app-version'
-//
-//            licenses {
-//                license {
-//                    name 'The Apache Software License, Version 2.0'
-//                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-//                    distribution 'repo'
-//                }
-//            }
-//            scm {
-//                connection 'https://github.com/KevinLoveGitHub/AutoAppVersion.git'
-//                url 'https://github.com/KevinLoveGitHub/AutoAppVersion'
-//            }
-//            developers {
-//                developer {
-//                    name 'Kevin.Kang'
-//                }
-//            }
-//        }
-//    }
-//}
+install {
+    repositories.mavenInstaller {
+        pom.project {
+            url 'https://github.com/KevinLoveGitHub/AutoAppVersion'
+
+            packaging 'aar'
+            //artifactId 'auto-app-version' //如果不设置默认使用settings.gradle中的配置 rootProject.name = 'auto-app-version'
+
+            licenses {
+                license {
+                    name 'The Apache Software License, Version 2.0'
+                    url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    distribution 'repo'
+                }
+            }
+            scm {
+                connection 'https://github.com/KevinLoveGitHub/AutoAppVersion.git'
+                url 'https://github.com/KevinLoveGitHub/AutoAppVersion'
+            }
+            developers {
+                developer {
+                    name 'Kevin.Kang'
+                }
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    archiveClassifier.set("sources")
+    from sourceSets.main.allSource
+}
+
+artifacts {
+    archives sourcesJar
+}
 
 bintray {
     user = project.hasProperty('bintrayUser') ? project.property('bintrayUser') : System.getenv('BINTRAY_USER')
