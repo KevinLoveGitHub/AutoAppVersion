@@ -1,5 +1,5 @@
 # AutoAppVersion
-
+[![Download](https://api.bintray.com/packages/kevinlive/maven/auto-app-version/images/download.svg) ](https://bintray.com/kevinlive/maven/auto-app-version/_latestVersion)
 ## example
 在项目中配置主版本和子版本，如果没有配置默认都为`1`
 
