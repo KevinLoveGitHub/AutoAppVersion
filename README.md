@@ -22,3 +22,13 @@ appVersion {
     isDebug  false
 }
 ```
+
+## 版本名说明
+生成的版本号格式如：`v1.2.100.200610.53b1f2c_master_modify_Shine-debug`
+
+* `1.2.100`：100为versionCode
+* `200610`：编译日期
+* `53b1f2c`：commit id
+* `master`：分支名
+* `modify`：如果编译该apk的代码未提交会出现该标识
+* `Shine-debug`：build variant

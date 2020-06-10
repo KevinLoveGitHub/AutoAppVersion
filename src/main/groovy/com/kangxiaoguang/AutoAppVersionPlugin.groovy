@@ -31,6 +31,7 @@ class AutoAppVersionPlugin implements Plugin<Project> {
         }
         extension = project.extensions.create('appVersion', AutoAppVersionExtension)
         project.afterEvaluate {
+
             project.android.applicationVariants.all { BaseVariant variant ->
                 addTasks(variant)
             }
@@ -61,9 +62,9 @@ class AutoAppVersionPlugin implements Plugin<Project> {
         String today = new Date().format('yyMMdd')
         String time = new Date().format('HHmmss')
         if (extension.isDebug) {
-            return version + ".$today." + getRevisionDescription() + '_' + getBranchName() + '.debug'
+            return version + ".$today." + getRevisionDescription() + '_' + getBranchName() + getStatus() + '.debug'
         }
-        return version + ".$today." + getRevisionDescription() + '_' + getBranchName()
+        return version + ".$today." + getRevisionDescription() + '_' + getBranchName() + getStatus()
     }
 
     private String getRevisionDescription() {
@@ -85,6 +86,14 @@ class AutoAppVersionPlugin implements Plugin<Project> {
             return 0
         }
         return result
+    }
+
+    private String getStatus() {
+        def result = getExecResult("git", "status", "--short")
+        if (result == null || result.size() == 0) {
+            return ''
+        }
+        return '_modify'
     }
 
     private String getExecResult(String... args) {
