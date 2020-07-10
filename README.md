@@ -19,6 +19,7 @@ apply plugin: 'com.kangxiaoguang.auto-app-version'
 appVersion {
     appMajor  "2"
     appMinor  "1"
+    addCommitCount  false
     isDebug  false
 }
 ```
@@ -26,9 +27,12 @@ appVersion {
 ## 版本名说明
 生成的版本号格式如：`v1.2.100.200610.53b1f2c_master_modify_Shine-debug`
 
-* `1.2.100`：100为versionCode
+* `1.2.100`：100为程序`versionCode`加上git commit次数
 * `200610`：编译日期
 * `53b1f2c`：commit id
 * `master`：分支名
 * `modify`：如果编译该apk的代码未提交会出现该标识
 * `Shine-debug`：build variant
+
+## 版本号说明
+如果定义`addCommitCount`，且值为`true`，版本号为程序`versionCode`加上git commit次数，否则为程序`versionCode`。该字段默认为`true`

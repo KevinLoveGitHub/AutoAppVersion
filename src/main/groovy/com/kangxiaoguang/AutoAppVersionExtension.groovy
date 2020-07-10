@@ -8,5 +8,6 @@ package com.kangxiaoguang
 class AutoAppVersionExtension {
     String appMajor
     String appMinor
+    boolean addCommitCount = true
     boolean isDebug
 }

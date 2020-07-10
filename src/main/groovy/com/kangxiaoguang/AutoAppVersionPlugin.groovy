@@ -8,13 +8,13 @@ import org.gradle.api.plugins.InvalidPluginException
 import org.gradle.process.ExecSpec
 
 import java.util.logging.Logger
-
 /**
  * 说明：
  * 作者：Kevin
  * 日期：2019-08-13
  */
 class AutoAppVersionPlugin implements Plugin<Project> {
+    private String assembleRegex = "^(:.*:)*assemble.*"
     private AutoAppVersionExtension extension
     private Logger logger
     private Project project
@@ -31,9 +31,15 @@ class AutoAppVersionPlugin implements Plugin<Project> {
         }
         extension = project.extensions.create('appVersion', AutoAppVersionExtension)
         project.afterEvaluate {
-
-            project.android.applicationVariants.all { BaseVariant variant ->
-                addTasks(variant)
+            project.tasks.configureEach { task ->
+                if (task.name ==~ assembleRegex) {
+                    String variantName = task.name.replace("assemble", "").toLowerCase()
+                    project.android.applicationVariants.configureEach { BaseVariant variant ->
+                        if (variantName == variant.name.toLowerCase()) {
+                            addTasks(variant)
+                        }
+                    }
+                }
             }
         }
     }
@@ -73,6 +79,9 @@ class AutoAppVersionPlugin implements Plugin<Project> {
     }
 
     private int getRevisionNumber() {
+        if (!this.extension.addCommitCount) {
+            return 0
+        }
         def result = getExecResult("git", "rev-list", "--count", "HEAD")
         if (result == null) {
             return 0
