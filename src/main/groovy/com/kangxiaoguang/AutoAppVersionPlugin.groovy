@@ -29,7 +29,20 @@ class AutoAppVersionPlugin implements Plugin<Project> {
         if (!project.plugins.hasPlugin("com.android.application")) {
             throw new InvalidPluginException("'com.android.application' plugin must be applied", null)
         }
-        extension = project.extensions.create('appVersion', AutoAppVersionExtension)
+        this.extension = project.extensions.create('appVersion', AutoAppVersionExtension, project)
+
+        def version = project.gradle.gradleVersion
+        println("current gradle version: " + version)
+
+        def split = version.split("\\.")
+        if (split == null || split.length < 2) {
+            return
+        }
+        if (Integer.valueOf(split[0]) >= 6 && Integer.valueOf(split[1]) >= 5) {
+            println("gradle version more than 6.5.0")
+            return
+        }
+
         project.afterEvaluate {
             project.tasks.configureEach { task ->
                 if (task.name ==~ assembleRegex) {
