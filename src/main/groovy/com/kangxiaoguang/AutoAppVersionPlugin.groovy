@@ -8,17 +8,17 @@ import org.gradle.api.plugins.InvalidPluginException
 import org.gradle.process.ExecSpec
 
 import java.util.logging.Logger
+
 /**
  * 说明：
  * 作者：Kevin
- * 日期：2019-08-13
- */
+ * 日期：2019-08-13*/
 class AutoAppVersionPlugin implements Plugin<Project> {
     private String assembleRegex = "^(:.*:)*assemble.*"
     private AutoAppVersionExtension extension
     private Logger logger
     private Project project
-    private String versionName
+    private String customVersionName
     private String revisionNumber
     private int versionCode
 
@@ -38,7 +38,9 @@ class AutoAppVersionPlugin implements Plugin<Project> {
         if (split == null || split.length < 2) {
             return
         }
-        if (Integer.valueOf(split[0]) >= 6 && Integer.valueOf(split[1]) >= 5) {
+
+        def GradleMajorVersion = Integer.valueOf(split[0])
+        if ((GradleMajorVersion >= 6 && Integer.valueOf(split[1]) >= 5) || GradleMajorVersion >= 7) {
             println("gradle version more than 6.5.0")
             return
         }
@@ -60,24 +62,21 @@ class AutoAppVersionPlugin implements Plugin<Project> {
     void addTasks(BaseVariant variant) {
         revisionNumber = getRevisionNumber()
         variant.outputs.each { output ->
-            versionName = getVersionName(this.extension, output.versionCode) + "_${output.name}"
+            customVersionName = getVersionName(this.extension, output.versionCode) + "_${output.name}"
             versionCode = revisionNumber + output.versionCode
-            println("versionName: ${versionName} versionCode: ${versionCode} revisionNumber: ${revisionNumber}")
-            output.versionNameOverride = versionName
+            println("versionName: ${customVersionName} versionCode: ${versionCode} revisionNumber: ${revisionNumber}")
+            output.versionNameOverride = customVersionName
             output.versionCodeOverride = versionCode
         }
 
-        variant.outputs.all { output ->
-            outputFileName = "${variant.getApplicationId()}_${versionName}.apk"
+        variant.outputs.all { output -> outputFileName = "${variant.getApplicationId()}_${customVersionName}.apk"
         }
     }
 
     private String getVersionName(AutoAppVersionExtension extension, int versionCode) {
         extension.appMajor = extension.appMajor == null ? '1' : extension.appMajor
         extension.appMinor = extension.appMinor == null ? '1' : extension.appMinor
-        String version = 'v' + extension.appMajor +
-                '.' + extension.appMinor +
-                '.' + (getRevisionNumber() + versionCode)
+        String version = 'v' + extension.appMajor + '.' + extension.appMinor + '.' + (getRevisionNumber() + versionCode)
         String today = new Date().format('yyMMdd')
         String time = new Date().format('HHmmss')
         if (extension.isDebug) {

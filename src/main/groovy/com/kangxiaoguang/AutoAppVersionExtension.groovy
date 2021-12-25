@@ -1,7 +1,6 @@
 package com.kangxiaoguang
 
 import com.android.build.gradle.api.BaseVariant
-import com.android.build.gradle.api.BaseVariantOutput
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.process.ExecSpec
@@ -23,33 +22,33 @@ class AutoAppVersionExtension {
         this.mProject = project
     }
 
-    final int versionCode() {
+    int versionCode() {
         int code = this.versionCode > 0 ? this.versionCode : getRevisionNumber()
         return code;
     }
 
-    final String versionName() {
+    String versionName() {
         String name = this.versionName !=null && !this.versionName.trim().isEmpty() ? this.versionName :
-                getVersionName()
+                getCustomVersionName()
         return name;
     }
 
-    final String versionName(BaseVariantOutput output) {
-        String name = this.versionName !=null && !this.versionName.trim().isEmpty() ? this.versionName :
-                getVersionName() + "_${output.name}"
+//    String versionName(BaseVariantOutput output) {
+//        String name = this.versionName !=null && !this.versionName.trim().isEmpty() ? this.versionName :
+//                getCustomVersionName() + "_${output.name}"
+//
+//        return name;
+//    }
 
-        return name;
-    }
-
-    final String fileName(BaseVariant output) {
+    String fileName(BaseVariant output) {
         String name = this.versionName !=null && !this.versionName.trim().isEmpty() ? this.versionName :
-                getVersionName() + "_${output.name}"
+                getCustomVersionName() + "_${output.name}"
 
         name = "${output.getApplicationId()}_${name}.apk"
         return name;
     }
 
-    private String getVersionName() {
+    private String getCustomVersionName() {
         this.appMajor = this.appMajor == null ? '1' : this.appMajor
         this.appMinor = this.appMinor == null ? '1' : this.appMinor
         String version = 'v' + this.appMajor +
