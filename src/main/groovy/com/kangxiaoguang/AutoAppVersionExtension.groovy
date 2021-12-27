@@ -1,6 +1,7 @@
 package com.kangxiaoguang
 
 import com.android.build.gradle.api.BaseVariant
+import com.android.build.gradle.api.BaseVariantOutput
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.process.ExecSpec
@@ -22,23 +23,27 @@ class AutoAppVersionExtension {
         this.mProject = project
     }
 
-    int versionCode() {
+    int customVersionCode() {
         int code = this.versionCode > 0 ? this.versionCode : getRevisionNumber()
         return code;
     }
 
-    String versionName() {
-        String name = this.versionName !=null && !this.versionName.trim().isEmpty() ? this.versionName :
-                getCustomVersionName()
-        return name;
-    }
-
-//    String versionName(BaseVariantOutput output) {
+//    String versionName() {
 //        String name = this.versionName !=null && !this.versionName.trim().isEmpty() ? this.versionName :
-//                getCustomVersionName() + "_${output.name}"
-//
+//                getCustomVersionName()
 //        return name;
 //    }
+
+    String customVersionName(BaseVariantOutput output) {
+        String name = this.versionName !=null && !this.versionName.trim().isEmpty() ? this.versionName :
+                getCustomVersionName()
+
+        if (output != null) {
+            name += "_${output.name}"
+        }
+
+        return name;
+    }
 
     String fileName(BaseVariant output) {
         String name = this.versionName !=null && !this.versionName.trim().isEmpty() ? this.versionName :
@@ -53,7 +58,7 @@ class AutoAppVersionExtension {
         this.appMinor = this.appMinor == null ? '1' : this.appMinor
         String version = 'v' + this.appMajor +
                 '.' + this.appMinor +
-                '.' + (versionCode())
+                '.' + (customVersionCode())
         String today = new Date().format('yyMMdd')
         String time = new Date().format('HHmmss')
         if (this.isDebug) {
