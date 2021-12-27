@@ -23,7 +23,10 @@ class AutoAppVersionExtension {
         this.mProject = project
     }
 
-    int customVersionCode() {
+    int customVersionCode(BaseVariantOutput output) {
+        if (!this.addCommitCount && output != null) {
+            return output.versionCode
+        }
         int code = this.versionCode > 0 ? this.versionCode : getRevisionNumber()
         return code;
     }
