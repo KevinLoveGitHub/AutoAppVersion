@@ -27,41 +27,35 @@ class AutoAppVersionExtension {
         if (!this.addCommitCount && output != null) {
             return output.versionCode
         }
-        int code = this.versionCode > 0 ? this.versionCode : getRevisionNumber()
+        int code = this.versionCode > 0 ? this.versionCode : getRevisionNumber() + output.versionCode
         return code;
     }
 
-//    String versionName() {
-//        String name = this.versionName !=null && !this.versionName.trim().isEmpty() ? this.versionName :
-//                getCustomVersionName()
-//        return name;
-//    }
-
     String customVersionName(BaseVariantOutput output) {
         String name = this.versionName !=null && !this.versionName.trim().isEmpty() ? this.versionName :
-                getCustomVersionName()
+                getCustomVersionName(output)
 
         if (output != null) {
             name += "_${output.name}"
         }
-
+        println("customVersionName: " + name)
         return name;
     }
 
-    String fileName(BaseVariant output) {
+    String fileName(BaseVariant base, BaseVariantOutput output) {
         String name = this.versionName !=null && !this.versionName.trim().isEmpty() ? this.versionName :
-                getCustomVersionName() + "_${output.name}"
+                getCustomVersionName(output) + "_${output.name}"
 
-        name = "${output.getApplicationId()}_${name}.apk"
+        name = "${base.getApplicationId()}_${name}.apk"
         return name;
     }
 
-    private String getCustomVersionName() {
+    private String getCustomVersionName(BaseVariantOutput output) {
         this.appMajor = this.appMajor == null ? '1' : this.appMajor
         this.appMinor = this.appMinor == null ? '1' : this.appMinor
         String version = 'v' + this.appMajor +
                 '.' + this.appMinor +
-                '.' + (customVersionCode())
+                '.' + (customVersionCode(output))
         String today = new Date().format('yyMMdd')
         String time = new Date().format('HHmmss')
         if (this.isDebug) {

@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-apply plugin: 'maven'
-apply plugin: 'maven-publish'
-apply plugin: 'signing'
-
+//apply plugin: 'java-library'
+//apply plugin: 'maven-publish'
+//apply plugin: 'signing'
+//apply plugin: 'com.vanniktech.maven.publish'
 def isReleaseBuild() {
     return VERSION_NAME.contains("SNAPSHOT") == false
 }
@@ -27,13 +27,11 @@ def isLocal() {
 }
 
 def getReleaseRepositoryUrl() {
-    return hasProperty('RELEASE_REPOSITORY_URL') && !isLocal() ? RELEASE_REPOSITORY_URL
-            : uri(LOCAL_REPOSITORY_PATH + "/releases")
+    return hasProperty('RELEASE_REPOSITORY_URL') && !isLocal() ? RELEASE_REPOSITORY_URL : uri(LOCAL_REPOSITORY_PATH + "/releases")
 }
 
 def getSnapshotRepositoryUrl() {
-    return hasProperty('SNAPSHOT_REPOSITORY_URL') && !isLocal() ? SNAPSHOT_REPOSITORY_URL
-            : uri(LOCAL_REPOSITORY_PATH + "/snapshots")
+    return hasProperty('SNAPSHOT_REPOSITORY_URL') && !isLocal() ? SNAPSHOT_REPOSITORY_URL : uri(LOCAL_REPOSITORY_PATH + "/snapshots")
 }
 
 def getRepositoryUsername() {
@@ -44,89 +42,54 @@ def getRepositoryPassword() {
     return hasProperty('NEXUS_PASSWORD') ? NEXUS_PASSWORD : ""
 }
 
-def configurePom(pom) {
-    pom.project {
-        name = POM_NAME
-        packaging = POM_PACKAGING
-        description = POM_DESCRIPTION
-        url = POM_URL
-
-        scm {
-            url = POM_SCM_URL
-            connection = POM_SCM_CONNECTION
-            developerConnection = POM_SCM_DEV_CONNECTION
+publishing {
+    repositories {
+        maven {
+            name = 'local'
+            def releasesRepoUrl = getReleaseRepositoryUrl()
+            def snapshotsRepoUrl = getSnapshotRepositoryUrl()
+            def repoUrl = isReleaseBuild() ? releasesRepoUrl : snapshotsRepoUrl
+            allowInsecureProtocol = true
+            println("repoUrl: " + repoUrl)
+            url = repoUrl
         }
-
-        licenses {
-            license {
-                name = POM_LICENCE_NAME
-                url = POM_LICENCE_URL
-                distribution = POM_LICENCE_DIST
-            }
-        }
-
-        developers {
-            developer {
-                id = POM_DEVELOPER_ID
-                name = POM_DEVELOPER_NAME
-            }
-        }
-    }
-
-}
-
-afterEvaluate { project ->
-    uploadArchives {
-        repositories {
-            mavenDeployer {
-                beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
-                pom.groupId = GROUP
-                pom.artifactId = POM_ARTIFACT_ID
-                pom.version = VERSION_NAME
-
-                def releasesRepoUrl = getReleaseRepositoryUrl()
-                def snapshotsRepoUrl = getSnapshotRepositoryUrl()
-                def url = isReleaseBuild() ? releasesRepoUrl : snapshotsRepoUrl
-                repository(url: url) {
-                    authentication(userName: getRepositoryUsername(), password: getRepositoryPassword())
-                }
-
-                configurePom(pom)
-            }
-        }
-    }
-
-    task sourcesJar(type: Jar) {
-        archiveClassifier.set('sources')
-        from sourceSets.main.allSource
-    }
-
-    task javadocJar(type: Jar) {
-        archiveClassifier.set("javadoc")
-        from javadoc
-    }
-
-    if (JavaVersion.current().isJava8Compatible()) {
-        allprojects {
-            tasks.withType(Javadoc) {
-                options.addStringOption('Xdoclint:none', '-quiet')
-            }
-        }
-    }
-
-    if (JavaVersion.current().isJava9Compatible()) {
-        allprojects {
-            tasks.withType(Javadoc) {
-                options.addBooleanOption('html5', true)
-            }
-        }
-    }
-
-    artifacts {
-        archives javadocJar, sourcesJar
-    }
-
-    signing {
-        sign configurations.archives
     }
 }
+//
+//java {
+//    withSourcesJar()
+//    withJavadocJar()
+//}
+//
+//mavenPublishing {
+//    coordinates(GROUP, POM_ARTIFACT_ID, VERSION_NAME)
+//
+//    // the following is optional
+//    pom {
+//        name = POM_NAME
+//        packaging = POM_PACKAGING
+//        description = POM_DESCRIPTION
+//        url = POM_URL
+//
+//        scm {
+//            url = POM_SCM_URL
+//            connection = POM_SCM_CONNECTION
+//            developerConnection = POM_SCM_DEV_CONNECTION
+//        }
+//
+//        licenses {
+//            license {
+//                name = POM_LICENCE_NAME
+//                url = POM_LICENCE_URL
+//                distribution = POM_LICENCE_DIST
+//            }
+//        }
+//
+//        developers {
+//            developer {
+//                id = POM_DEVELOPER_ID
+//                name = POM_DEVELOPER_NAME
+//            }
+//        }
+//    }
+//}
