@@ -13,7 +13,7 @@
 }
 
 dependencies {
-    classpath 'com.kangxiaoguang.gradle.tools:auto-app-version:2.0.0'
+    classpath 'com.kangxiaoguang.gradle.tools:auto-app-version:2.0.7'
 }
 ```
 
@@ -43,10 +43,7 @@ android.applicationVariants.all {
         variant.outputs.each { output ->
             output.versionNameOverride = appVersion.customVersionName()
             output.versionCodeOverride = appVersion.customVersionCode()
-        }
-
-        variant.outputs.all {
-            outputFileName = appVersion.fileName(variant)
+            output.outputFileName = appVersion.fileName(variant, output)
         }
 }
 ```
