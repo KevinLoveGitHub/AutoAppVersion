@@ -4,7 +4,7 @@
 /build/
 repo
 gradle.properties
-.gpg
+*.gpg
 
 # Ignore Gradle GUI config
 gradle-app.setting
