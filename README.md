@@ -31,6 +31,7 @@ appVersion {
     // 指定versionName
     versionName "app"
     addCommitCount  false
+    incrementVersionCode 50
     isDebug  false
 }
 ```

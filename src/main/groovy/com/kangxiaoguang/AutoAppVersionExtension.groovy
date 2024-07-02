@@ -1,10 +1,14 @@
 package com.kangxiaoguang
 
+import com.android.aapt.Resources
 import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.api.BaseVariantOutput
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.process.ExecSpec
+import java.util.regex.Matcher
+import java.util.regex.Pattern
+
 /**
  * 说明：
  * 作者：Kevin
@@ -14,6 +18,7 @@ class AutoAppVersionExtension {
     String appMajor
     String appMinor
     int versionCode
+    int incrementVersionCode
     String versionName
     boolean addCommitCount = true
     boolean isDebug
@@ -21,18 +26,28 @@ class AutoAppVersionExtension {
 
     AutoAppVersionExtension(Project project) {
         this.mProject = project
+
     }
 
     int customVersionCode(BaseVariantOutput output) {
         if (!this.addCommitCount && output != null) {
             return output.versionCode
         }
-        int code = this.versionCode > 0 ? this.versionCode : getRevisionNumber() + output.versionCode
+        int code = getRevisionNumber() + this.incrementVersionCode
+        if (output != null) {
+            code += output.versionCode
+        }
+        code = this.versionCode > 0 ? this.versionCode : code
+        return code;
+    }
+
+    int getAutoVersionCode() {
+        int code = getRevisionNumber() + this.incrementVersionCode
         return code;
     }
 
     String customVersionName(BaseVariantOutput output) {
-        String name = this.versionName !=null && !this.versionName.trim().isEmpty() ? this.versionName :
+        String name = this.versionName != null && !this.versionName.trim().isEmpty() ? this.versionName :
                 getCustomVersionName(output)
 
         if (output != null) {
@@ -42,20 +57,52 @@ class AutoAppVersionExtension {
         return name;
     }
 
+    String getAutoVersionName() {
+        String name = getCustomVersionName(null)
+        name = name + "_" + getCurrentFlavor()
+        return name;
+    }
+
+    private String getCurrentFlavor() {
+        String taskRequestsStr = this.mProject.gradle.startParameter.taskRequests.toString()
+        Pattern pattern
+        if (taskRequestsStr.contains("assemble")) {
+            pattern = Pattern.compile("assemble(\\w+)?(Release|Debug)")
+        } else {
+            pattern = Pattern.compile("bundle(\\w+)?(Release|Debug)")
+        }
+
+        Matcher matcher = pattern.matcher(taskRequestsStr)
+        String flavor
+        if (matcher.find()) {
+            if (matcher.group(1)) {
+                flavor = matcher.group(1).toLowerCase() + "-" + matcher.group(2).toLowerCase()
+            } else {
+                flavor = matcher.group(2).toLowerCase()
+            }
+        } else {
+            println("NO FLAVOR FOUND")
+            flavor = ""
+        }
+        return flavor
+    }
+
     String fileName(BaseVariant base, BaseVariantOutput output) {
-        String name = this.versionName !=null && !this.versionName.trim().isEmpty() ? this.versionName :
+        String name = this.versionName != null && !this.versionName.trim().isEmpty() ? this.versionName :
                 getCustomVersionName(output) + "_${output.name}"
 
         name = "${base.getApplicationId()}_${name}.apk"
         return name;
     }
 
+    public String getAutoFileName(BaseVariant base) {
+        return "${base.getApplicationId()}_${getAutoVersionName()}.apk"
+    }
+
     private String getCustomVersionName(BaseVariantOutput output) {
         this.appMajor = this.appMajor == null ? '1' : this.appMajor
         this.appMinor = this.appMinor == null ? '1' : this.appMinor
-        String version = 'v' + this.appMajor +
-                '.' + this.appMinor +
-                '.' + (customVersionCode(output))
+        String version = 'v' + this.appMajor + '.' + this.appMinor + '.' + (customVersionCode(output))
         String today = new Date().format('yyMMdd')
         String time = new Date().format('HHmmss')
         if (this.isDebug) {
