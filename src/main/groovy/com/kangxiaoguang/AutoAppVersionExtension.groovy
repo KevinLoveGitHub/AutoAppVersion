@@ -1,14 +1,14 @@
 package com.kangxiaoguang
 
-import com.android.aapt.Resources
+
 import com.android.build.gradle.api.BaseVariant
 import com.android.build.gradle.api.BaseVariantOutput
 import org.gradle.api.Action
 import org.gradle.api.Project
 import org.gradle.process.ExecSpec
+
 import java.util.regex.Matcher
 import java.util.regex.Pattern
-
 /**
  * 说明：
  * 作者：Kevin
@@ -97,6 +97,10 @@ class AutoAppVersionExtension {
 
     public String getAutoFileName(BaseVariant base) {
         return "${base.getApplicationId()}_${getAutoVersionName()}.apk"
+    }
+
+    public String getAutoFileName(String applicationId) {
+        return "${applicationId}_${getAutoVersionName()}.apk"
     }
 
     private String getCustomVersionName(BaseVariantOutput output) {
